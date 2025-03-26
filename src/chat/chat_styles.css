@@ -1,0 +1,38 @@
+/* styles.css */
+
+/* Chat history container styling */
+.chat-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #ddd;
+    padding: 8px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.chat-container:hover {
+    background-color: #ececec;
+}
+
+.chat-title {
+    flex-grow: 1;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.delete-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: red;
+}
+
+.delete-button:hover {
+    color: darkred;
+}
+
+/* You can add any more styles here that you’d like to centralize */

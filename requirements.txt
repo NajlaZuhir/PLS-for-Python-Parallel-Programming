@@ -1,0 +1,24 @@
+# streamlit>=1.10.0
+# langchain
+# sentence-transformers
+# faiss-cpu
+# openai
+# python-dotenv
+# mistralai
+
+streamlit==1.43.2
+openai
+faiss-cpu
+numpy
+python-dotenv
+requests
+PyPDF2
+youtube_transcript_api
+beautifulsoup4
+langchain
+langchain_community
+mistralai
+
+
+
+# pip install -r requirements.txt
