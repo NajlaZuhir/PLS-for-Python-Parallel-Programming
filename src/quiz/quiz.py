@@ -17,7 +17,8 @@ from src.quiz.prompts import (
     get_code_based_template,
     CODE_BASED_TEMPLATES
 )
-from src.quiz.mistral_client import mistral_chat
+# from src.quiz.mistral_client import mistral_chat
+from src.quiz.openai_client import openai_chat
 
 #################################################
 # 1. Utility: Extract JSON from Mistral response
@@ -58,7 +59,7 @@ Requirements:
 - Provide a concise explanation based solely on the chapter content.
 - Output only the explanation, nothing else.
 """
-    return mistral_chat(explanation_prompt)
+    return openai_chat(explanation_prompt)
 
 def generate_hint(vector_db: FAISS, question_text: str, chapter_name: str) -> str:
     """
@@ -83,7 +84,7 @@ Requirements:
 - Do not include the full answer.
 - Output only the hint.
 """
-    return mistral_chat(hint_prompt)
+    return openai_chat(hint_prompt)
 
 #################################################
 # 3. Generate Questions for a Chapter
@@ -142,7 +143,7 @@ Provide your output in the following JSON format:
 }}
 NO additional content.
 """
-            response_text = mistral_chat(prompt)
+            response_text = openai_chat(prompt) # if mistral mistral_chat(prompt)
             response_text = extract_json(response_text)
             try:
                 data = json.loads(response_text)
@@ -172,7 +173,7 @@ NO additional content.
         )
         final_prompt = "\n\n".join(msg.content for msg in messages)
 
-        response_text = mistral_chat(final_prompt)
+        response_text = openai_chat(final_prompt)
         response_text = extract_json(response_text)
 
         # Mark chunks as used
@@ -285,7 +286,7 @@ NO additional content.
             dynamic_instruction=dynamic_instruction
         )
 
-    response_text = mistral_chat(prompt)
+    response_text = openai_chat(prompt)
     response_text = extract_json(response_text)
 
     try:
