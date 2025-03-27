@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 from bs4 import BeautifulSoup
 from youtube_transcript_api import YouTubeTranscriptApi
+from src.quiz.openai_client import openai_chat
 from youtube_transcript_api._errors import TranscriptsDisabled, NoTranscriptFound
 from src.quiz import CHAPTER_MAP  # <--- Import CHAPTER_MAP from the package
 from src.quiz.quiz import (
@@ -9,7 +10,8 @@ from src.quiz.quiz import (
     process_chapter,
     generate_quiz_from_text,
     generate_hint,
-    mistral_chat
+    openai_chat
+    # mistral_chat
 )
 
 def handle_question_type_change(question_type: str):
@@ -34,6 +36,7 @@ def handle_question_type_change(question_type: str):
 
         # Force a re-run so the UI resets
         st.rerun()
+
 
 
 def render_quiz():
@@ -87,7 +90,7 @@ def render_quiz():
         if st.session_state.source_method == "PDF Chapter":
             with st.sidebar.expander("📖 PDF Chapter Settings", expanded=True):  # Auto-expanded for the selected method
                 selected_chapter = st.selectbox("📖 Select a chapter:", list(CHAPTER_MAP.keys()))
-                num_questions = st.number_input("📝 Number of questions:", min_value=1, max_value=50, value=10)
+                num_questions = st.number_input("📝 Number of questions:", min_value=1, max_value=50, value=6)
                 st.session_state.difficulty = st.radio(
                     " 🎚 Select Difficulty",
                     ["Easy", "Medium", "Hard"],
@@ -139,7 +142,8 @@ def render_quiz():
 
                             def is_python_content(text):
                                 prompt = f"Determine if the following text is about Python programming. Answer only YES or NO.\n\nText: {text[:500]}"
-                                answer = mistral_chat(prompt)
+                                # answer = mistral_chat(prompt)
+                                answer = openai_chat(prompt)
                                 return "YES" in answer.upper()
 
                             if not is_python_content(raw_text):
@@ -197,7 +201,7 @@ def render_quiz():
                                 if raw_text:
                                     def is_python_content(text):
                                         prompt = f"Determine if the following text is about Python programming. Answer only YES or NO.\n\nText: {text[:500]}"
-                                        answer = mistral_chat(prompt)
+                                        answer = openai_chat(prompt)
                                         return "YES" in answer.upper()
 
                                     if not is_python_content(raw_text):
@@ -246,7 +250,7 @@ def render_quiz():
                             # Check if it's about Python
                             def is_python_content(text):
                                 prompt = f"Determine if the following text is about Python programming. Answer only YES or NO.\n\nText: {text[:500]}"
-                                answer = mistral_chat(prompt)
+                                answer = openai_chat(prompt)
                                 return "YES" in answer.upper()
 
                             if not is_python_content(raw_text):
