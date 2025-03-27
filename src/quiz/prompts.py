@@ -15,7 +15,7 @@ def get_dynamic_instruction(difficulty):
 ########################
 # 5. PROMPT TEMPLATES (Non-code-based)
 ########################
-PROMPT_MULTIPLE_CHOICE = """You are a helpful teaching assistant.
+PROMPT_MULTIPLE_CHOICE = """"You are a precise technical assistant that always outputs valid JSON."
 Difficulty: {difficulty}.
 
 Additional Instructions: {dynamic_instruction}
@@ -43,7 +43,7 @@ Requirements:
 NO additional content. ONLY JSON.
 """
 
-PROMPT_TRUE_FALSE = """You are a helpful teaching assistant.
+PROMPT_TRUE_FALSE = """"You are a precise technical assistant that always outputs valid JSON."
 Difficulty: {difficulty}.
 
 Additional Instructions: {dynamic_instruction}
@@ -71,7 +71,7 @@ Requirements:
 NO additional content. ONLY JSON.
 """
 
-PROMPT_FILL_IN_THE_BLANKS = """You are a helpful teaching assistant.
+PROMPT_FILL_IN_THE_BLANKS = """"You are a precise technical assistant that always outputs valid JSON."
 Difficulty: {difficulty}.
 
 Additional Instructions: {dynamic_instruction}
@@ -97,7 +97,7 @@ Requirements:
 NO additional content. ONLY JSON.
 """
 
-PROMPT_SHORT_ANSWER = """You are a helpful teaching assistant.
+PROMPT_SHORT_ANSWER = """"You are a precise technical assistant that always outputs valid JSON."
 Difficulty: {difficulty}.
 
 Additional Instructions: {dynamic_instruction}
@@ -127,17 +127,30 @@ NO additional content. ONLY JSON.
 # NEW: CODE-BASED QUESTION TEMPLATES
 ########################
 CODE_BASED_TEMPLATES = {
-    "Completion": """You are a helpful teaching assistant. Generate a code snippet with missing parts based on the provided context. The question should present a code snippet with certain lines removed (indicated by "_____") and ask the student to complete it. Provide the complete code in your answer.
+    "Completion": """You are a precise technical assistant that always outputs valid JSON. Generate a code snippet with missing parts based on the provided context. The question should present a code snippet with certain lines removed (indicated by "_____") and ask the student to complete it. Provide the complete code in your answer.
 """,
-    "SpotTheBug": """You are a code debugging assistant. Given the following code snippet, identify and fix any bugs that might cause errors or undesirable behavior (such as deadlocks or race conditions). Provide the corrected code and a brief explanation of the fix.
+    "SpotTheBug": """You are a precise technical assistant that always outputs valid JSON. Given the following code snippet, identify and fix any bugs that might cause errors or undesirable behavior (such as deadlocks or race conditions). Provide the corrected code and a brief explanation of the fix.
 """,
-    "PredictOutput": """You are a code execution expert. Analyze the following parallel programming code snippet and predict its output. Include a brief explanation of how concurrency might affect the output.
-""",
-    "Transform": """You are an expert code converter. Rewrite the following code snippet using a different parallel programming approach. Ensure that the functionality remains equivalent. Provide the transformed code and a brief explanation of the changes.
-""",
-    "ExplainPerformance": """You are an optimization expert. Analyze the following code snippet and explain why it might suffer from performance issues (e.g., due to excessive locking or inefficient resource use). Provide suggestions for improvements.
-"""
+    "PredictOutput": """You are a precise technical assistant that always outputs valid JSON. Analyze the following parallel programming code snippet and predict its output. Include a brief explanation of how concurrency might affect the output.
+""",  # Changed first line
+    "Transform": """You are a precise technical assistant that always outputs valid JSON. Rewrite the following code snippet using a different parallel programming approach. Ensure equivalent functionality. Provide transformed code and explanation.
+""",  # Changed first line
+    "ExplainPerformance": """You are a precise technical assistant that always outputs valid JSON. Analyze the following code snippet and explain performance issues (e.g., excessive locking). Provide improvement suggestions.
+"""  # Changed first line
 }
+
+# CODE_BASED_TEMPLATES = {
+#     "Completion": """You are a helpful teaching assistant. Generate a code snippet with missing parts based on the provided context. The question should present a code snippet with certain lines removed (indicated by "_____") and ask the student to complete it. Provide the complete code in your answer.
+# """,
+#     "SpotTheBug": """You are a code debugging assistant. Given the following code snippet, identify and fix any bugs that might cause errors or undesirable behavior (such as deadlocks or race conditions). Provide the corrected code and a brief explanation of the fix.
+# """,
+#     "PredictOutput": """You are a code execution expert. Analyze the following parallel programming code snippet and predict its output. Include a brief explanation of how concurrency might affect the output.
+# """,
+#     "Transform": """You are an expert code converter. Rewrite the following code snippet using a different parallel programming approach. Ensure that the functionality remains equivalent. Provide the transformed code and a brief explanation of the changes.
+# """,
+#     "ExplainPerformance": """You are an optimization expert. Analyze the following code snippet and explain why it might suffer from performance issues (e.g., due to excessive locking or inefficient resource use). Provide suggestions for improvements.
+# """
+# }
 
 
 def get_code_based_template():
