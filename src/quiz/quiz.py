@@ -102,13 +102,14 @@ def generate_question_skeleton(chapter_name: str, num_questions: int, question_t
     if "used_chunks" not in st.session_state:
         st.session_state.used_chunks = set()
 
-    all_docs = vector_db.similarity_search(query="", k=len(vector_db.docstore._dict))
+    # Instead of returning *all* chunks:
+    all_docs = vector_db.similarity_search(query="", k=10)  # or k=5, etc.
     filtered_docs = [doc for doc in all_docs if doc.metadata.get("chunk_id") not in st.session_state.used_chunks]
 
-    # If not enough new docs remain, reset used chunks
     if len(filtered_docs) < 5:
         st.session_state.used_chunks.clear()
         filtered_docs = all_docs
+
 
     context_chunks = [doc.page_content.strip() for doc in filtered_docs]
     context = "\n\n".join(context_chunks)
