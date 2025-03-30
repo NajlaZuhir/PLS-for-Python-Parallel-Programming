@@ -60,3 +60,29 @@
   - Archived conversations are used to populate the chat history in the sidebar for future reference.
 - **Deletion Functionality:**
   - Provides functionalities for deleting old conversations.
+
+ # Code Mentor Architecture Overview
+
+The Code Mentor system supports two main features—code review (debugging) and code conversion—using Mistral’s API.
+
+## 1. Core Modules
+
+### 1.1. code_convertor.py
+- **Purpose:**  
+  Converts parallel programming code from one paradigm to another (e.g., from multiprocessing to threading) and provides an explanation using Mistral.
+
+### 1.2. code_review.py
+- **Purpose:**  
+  Reviews provided parallel programming code to identify issues (e.g., syntax errors, potential deadlocks, race conditions) and suggests improvements using Mistral.
+
+## 2. Code Mentor UI
+
+### code_mentor.py
+- **Purpose:**  
+  Provides an interactive user interface for both code review and code conversion tasks.
+- **Features:**  
+  - **Debugger Mode:**  
+    For code review, where users input code to receive debugging and review feedback.
+  - **Converter Mode:**  
+    For code conversion, where users input code and select a target paradigm to receive converted code along with an explanation.
+
