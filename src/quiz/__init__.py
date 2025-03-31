@@ -1,6 +1,6 @@
 # src/quiz/__init__.py
 
-from .quiz import (
+from .quiz_logic import (
     generate_quiz,
     generate_quiz_from_text,
     generate_explanation,

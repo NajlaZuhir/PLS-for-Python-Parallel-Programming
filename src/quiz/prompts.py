@@ -123,50 +123,47 @@ Requirements:
 NO additional content. ONLY JSON.
 """
 
-########################
-# NEW: CODE-BASED QUESTION TEMPLATES
-########################
-CODE_BASED_TEMPLATES = {
-    "Completion": """You are a precise technical assistant that always outputs valid JSON. Generate a code snippet with missing parts based on the provided context. The question should present a code snippet with certain lines removed (indicated by "_____") and ask the student to complete it. Provide the complete code in your answer.
-""",
-    "SpotTheBug": """You are a precise technical assistant that always outputs valid JSON. Given the following code snippet, identify and fix any bugs that might cause errors or undesirable behavior (such as deadlocks or race conditions). Provide the corrected code and a brief explanation of the fix.
-""",
-    "PredictOutput": """You are a precise technical assistant that always outputs valid JSON. Analyze the following parallel programming code snippet and predict its output. Include a brief explanation of how concurrency might affect the output.
-""",  # Changed first line
-    "Transform": """You are a precise technical assistant that always outputs valid JSON. Rewrite the following code snippet using a different parallel programming approach. Ensure equivalent functionality. Provide transformed code and explanation.
-""",  # Changed first line
-    "ExplainPerformance": """You are a precise technical assistant that always outputs valid JSON. Analyze the following code snippet and explain performance issues (e.g., excessive locking). Provide improvement suggestions.
-"""  # Changed first line
-}
+PROMPT_CODE_BASED = """"You are a precise technical assistant that always outputs valid JSON."
+Difficulty: {difficulty}.
 
-# CODE_BASED_TEMPLATES = {
-#     "Completion": """You are a helpful teaching assistant. Generate a code snippet with missing parts based on the provided context. The question should present a code snippet with certain lines removed (indicated by "_____") and ask the student to complete it. Provide the complete code in your answer.
-# """,
-#     "SpotTheBug": """You are a code debugging assistant. Given the following code snippet, identify and fix any bugs that might cause errors or undesirable behavior (such as deadlocks or race conditions). Provide the corrected code and a brief explanation of the fix.
-# """,
-#     "PredictOutput": """You are a code execution expert. Analyze the following parallel programming code snippet and predict its output. Include a brief explanation of how concurrency might affect the output.
-# """,
-#     "Transform": """You are an expert code converter. Rewrite the following code snippet using a different parallel programming approach. Ensure that the functionality remains equivalent. Provide the transformed code and a brief explanation of the changes.
-# """,
-#     "ExplainPerformance": """You are an optimization expert. Analyze the following code snippet and explain why it might suffer from performance issues (e.g., due to excessive locking or inefficient resource use). Provide suggestions for improvements.
-# """
-# }
+Additional Instructions: {dynamic_instruction}
 
+Generate {num_questions} code-based questions about: "{topic}" using EXCLUSIVELY this context:
 
-def get_code_based_template():
-    """Randomly select one of the code-based question types."""
-    question_type = random.choice(list(CODE_BASED_TEMPLATES.keys()))
-    return question_type, CODE_BASED_TEMPLATES[question_type]
+{context}
+
+Requirements:
+1. YOU MUST ALWAYS INCLUDE a multi-line Python code snippet in the "code_snippet" field, using triple backticks (```python ...```).
+   If no code is in the context, invent a short, relevant Python snippet for demonstration.
+2. The snippet must be valid Python code that illustrates or tests the concept from the question. 
+3. Questions should ask the user to spot a bug, complete the code, or predict the output for that snippet.
+4. Provide a single correct answer OR a comma-separated list of acceptable answers.
+5. Reflect {difficulty} complexity in the questions.
+6. Output JSON in this format:
+{{
+  "questions": [
+    {{
+      "question": "...",
+      "code_snippet": "...",
+      "answer": "..."
+    }}
+  ]
+}}
+NO additional content. ONLY JSON.
+"""
 
 
-# 2. Define get_prompt_template
+
+
 def get_prompt_template(question_type):
-    if question_type == "Multiple Choice":
-        return PROMPT_MULTIPLE_CHOICE
-    elif question_type == "True/False":
-        return PROMPT_TRUE_FALSE
-    elif question_type == "Fill in the Blanks":
-        return PROMPT_FILL_IN_THE_BLANKS
-    elif question_type == "Short Answer":
-        return PROMPT_SHORT_ANSWER
-    return ""
+    return {
+        "Multiple Choice": PROMPT_MULTIPLE_CHOICE,
+        "True/False": PROMPT_TRUE_FALSE,
+        "Fill in the Blanks": PROMPT_FILL_IN_THE_BLANKS,
+        "Short Answer": PROMPT_SHORT_ANSWER,
+        "Code Based": PROMPT_CODE_BASED,   # <-- new entry
+    }.get(question_type, "")
+
+
+
+

@@ -1,6 +1,6 @@
 import streamlit as st
 import uuid
-from src.chat.chat import generate_response  # Make sure this import is correct
+from src.chat.chat_logic import generate_response  # Make sure this import is correct
 from src.database.db_operations import ChatArchive  # If needed for direct DB ops
 from src.auth.auth import get_current_user  # If you need user info here
 

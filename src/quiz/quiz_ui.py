@@ -5,7 +5,7 @@ from youtube_transcript_api import YouTubeTranscriptApi
 from src.quiz.openai_client import openai_chat
 from youtube_transcript_api._errors import TranscriptsDisabled, NoTranscriptFound
 from src.quiz import CHAPTER_MAP  # <--- Import CHAPTER_MAP from the package
-from src.quiz.quiz import (
+from src.quiz.quiz_logic import (
     generate_quiz,
     process_chapter,
     generate_quiz_from_text,
@@ -98,7 +98,8 @@ def render_quiz():
                 )
 
                 
-                question_type = st.selectbox("🔢 Question Type", ["Multiple Choice", "True/False", "Fill in the Blanks", "Short Answer", "Code-Based Question"])
+                question_type = st.selectbox("🔢 Question Type", ["Multiple Choice", "True/False", "Fill in the Blanks", "Short Answer", "Code Based"])
+
                 handle_question_type_change(question_type)
                 if st.button("🚀 Generate Quiz"):
                     st.session_state.quiz_data = generate_quiz(
@@ -126,7 +127,7 @@ def render_quiz():
                     ["Easy", "Medium", "Hard"],
                     index=["Easy", "Medium", "Hard"].index(st.session_state.difficulty)
                 )
-                question_type = st.selectbox("🔢 Question Type", ["Multiple Choice", "True/False", "Fill in the Blanks", "Short Answer", "Code-Based Question"])
+                question_type = st.selectbox("🔢 Question Type", ["Multiple Choice", "True/False", "Fill in the Blanks", "Short Answer", "Code Based"])
                 handle_question_type_change(question_type)
                 
                 if st.button("🌍 Generate Quiz from Link"):
@@ -177,7 +178,7 @@ def render_quiz():
                     ["Easy", "Medium", "Hard"],
                     index=["Easy", "Medium", "Hard"].index(st.session_state.difficulty)
                 )
-                question_type = st.selectbox("🔢 Question Type", ["Multiple Choice", "True/False", "Fill in the Blanks", "Short Answer", "Code-Based Question"])
+                question_type = st.selectbox("🔢 Question Type", ["Multiple Choice", "True/False", "Fill in the Blanks", "Short Answer", "Code Based"])
                 handle_question_type_change(question_type)
 
                 if st.button("🎬 Generate Quiz from YouTube"):
@@ -235,7 +236,7 @@ def render_quiz():
                     ["Easy", "Medium", "Hard"],
                     index=["Easy", "Medium", "Hard"].index(st.session_state.difficulty)
                 )
-                question_type = st.selectbox("🔢 Question Type", ["Multiple Choice", "True/False", "Fill in the Blanks", "Short Answer", "Code-Based Question"])
+                question_type = st.selectbox("🔢 Question Type", ["Multiple Choice", "True/False", "Fill in the Blanks", "Short Answer", "Code Based"])
                 handle_question_type_change(question_type)
 
                 if st.button("📑 Generate Quiz from Uploaded PDF"):
@@ -300,6 +301,15 @@ def render_quiz():
                 explanation = q.get("explanation", "No explanation found.")
         
                 st.markdown(f"<h4>Q{i+1}. {q_text}</h4>", unsafe_allow_html=True)
+
+                # Add this block to display the code snippet if present:
+                raw_snippet = q.get("code_snippet", "")
+                if raw_snippet:
+                    # Remove triple backticks if present
+                    cleaned_snippet = raw_snippet.replace("```python", "").replace("```", "")
+                    st.code(cleaned_snippet.strip(), language="python")
+
+                    
                 user_answer_key = f"user_answer_{i}"
                 # Initialize the key with an empty string if it doesn't exist
                 st.session_state.user_answers.setdefault(user_answer_key, "")
@@ -348,7 +358,7 @@ def render_quiz():
 
         
                 # Hints if question_type is fill-in, short, or code-based
-                elif question_type in ["Fill in the Blanks", "Short Answer", "Code-Based Question"]:
+                elif question_type in ["Fill in the Blanks", "Short Answer", "Code Based"]:
                     st.session_state.user_answers[user_answer_key] = st.text_input(
                         f"Your answer for Q{i+1}",
                         key=f"text_{i}"
@@ -374,8 +384,19 @@ def render_quiz():
                         if correct_answer.lower() in str(user_answer).lower():
                             is_correct = True
                     else:
-                        if correct_answer.strip().lower() == user_answer.strip().lower():
-                            is_correct = True
+                        def is_answer_correct(user_answer: str, correct_answer: str) -> bool:
+                            user_lower = user_answer.strip().lower()
+                            correct_lower = correct_answer.strip().lower()
+                            
+                            # Check for exact match first
+                            if user_lower == correct_lower:
+                                return True
+                            
+                            # Check for key phrases (customize based on expected answers)
+                            key_phrases = ["wait", "producer", "notify", "block"]
+                            return all(phrase in user_lower for phrase in key_phrases)
+
+                        is_correct = is_answer_correct(user_answer, correct_answer)
         
                     if is_correct:
                         st.markdown(f"<p style='color: green; font-weight: bold;'>✔ Correct!</p>", unsafe_allow_html=True)

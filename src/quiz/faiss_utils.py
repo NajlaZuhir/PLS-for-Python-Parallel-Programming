@@ -35,10 +35,11 @@ def process_chapter(chapter_name: str, cache=True) -> FAISS:
 
     # Split with text splitter
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,
-        chunk_overlap=100,
-        separators=["\n\n", "\n", " "]
+    chunk_size=2000,    # Larger chunk size
+    chunk_overlap=0,
+    separators=["\n\n", "\n", " "]
     )
+
     chunks = text_splitter.split_documents(pages)
 
     # Assign unique chunk IDs
