@@ -109,42 +109,14 @@ using EXCLUSIVELY this context:
 
 Requirements:
 1. Provide a question that can be answered in a short phrase or sentence.
-2. Provide a single correct answer.
-3. Reflect {difficulty} complexity in the questions.
-4. Output JSON in this format:
+2. Dont provide code snippet questions.
+3. Provide a single correct answer.
+4. Reflect {difficulty} complexity in the questions.
+5. Output JSON in this format:
 {{
   "questions": [
     {{
       "question": "...",
-      "answer": "..."
-    }}
-  ]
-}}
-NO additional content. ONLY JSON.
-"""
-
-PROMPT_CODE_BASED = """"You are a precise technical assistant that always outputs valid JSON."
-Difficulty: {difficulty}.
-
-Additional Instructions: {dynamic_instruction}
-
-Generate {num_questions} code-based questions about: "{topic}" using EXCLUSIVELY this context:
-
-{context}
-
-Requirements:
-1. YOU MUST ALWAYS INCLUDE a multi-line Python code snippet in the "code_snippet" field, using triple backticks (```python ...```).
-   If no code is in the context, invent a short, relevant Python snippet for demonstration.
-2. The snippet must be valid Python code that illustrates or tests the concept from the question. 
-3. Questions should ask the user to spot a bug, complete the code, or predict the output for that snippet.
-4. Provide a single correct answer OR a comma-separated list of acceptable answers.
-5. Reflect {difficulty} complexity in the questions.
-6. Output JSON in this format:
-{{
-  "questions": [
-    {{
-      "question": "...",
-      "code_snippet": "...",
       "answer": "..."
     }}
   ]
@@ -160,8 +132,7 @@ def get_prompt_template(question_type):
         "Multiple Choice": PROMPT_MULTIPLE_CHOICE,
         "True/False": PROMPT_TRUE_FALSE,
         "Fill in the Blanks": PROMPT_FILL_IN_THE_BLANKS,
-        "Short Answer": PROMPT_SHORT_ANSWER,
-        "Code Based": PROMPT_CODE_BASED,   # <-- new entry
+        "Short Answer": PROMPT_SHORT_ANSWER
     }.get(question_type, "")
 
 
