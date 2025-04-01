@@ -140,28 +140,19 @@ def render_quiz():
                             html = resp.text
                             soup = BeautifulSoup(html, "html.parser")
                             raw_text = soup.get_text(separator="\n")
+                            
+                            st.session_state.quiz_data = generate_quiz_from_text(
+                                raw_text=raw_text,
+                                num_questions=num_questions,
+                                question_type=question_type,
+                                difficulty=st.session_state.difficulty
 
-                            def is_python_content(text):
-                                prompt = f"Determine if the following text is about Python programming. Answer only YES or NO.\n\nText: {text[:500]}"
-                                # answer = mistral_chat(prompt)
-                                answer = openai_chat(prompt)
-                                return "YES" in answer.upper()
-
-                            if not is_python_content(raw_text):
-                                st.warning("⚠️ This content does not appear to be about Python programming. Quiz generation aborted.")
-                            else:
-                                st.session_state.quiz_data = generate_quiz_from_text(
-                                    raw_text=raw_text,
-                                    num_questions=num_questions,
-                                    question_type=question_type,
-                                    difficulty=st.session_state.difficulty
-
-                                )
-                                st.session_state.checked_answers = False
-                                st.session_state.user_answers = {}
-                                st.session_state.hints = {}
-                                st.session_state.score = 0
-                                st.rerun()
+                            )
+                            st.session_state.checked_answers = False
+                            st.session_state.user_answers = {}
+                            st.session_state.hints = {}
+                            st.session_state.score = 0
+                            st.rerun()
                         except Exception as e:
                             st.error(f"❌ Failed to fetch link content: {e}")
 
@@ -237,28 +228,18 @@ def render_quiz():
                             from PyPDF2 import PdfReader
                             reader = PdfReader(uploaded_pdf)
                             raw_text = "".join([page.extract_text() or "" for page in reader.pages])
+                            st.session_state.quiz_data = generate_quiz_from_text(
+                                raw_text=raw_text,
+                                num_questions=num_questions,
+                                question_type=question_type,
+                                difficulty=st.session_state.difficulty
 
-                            # Check if it's about Python
-                            def is_python_content(text):
-                                prompt = f"Determine if the following text is about Python programming. Answer only YES or NO.\n\nText: {text[:500]}"
-                                answer = openai_chat(prompt)
-                                return "YES" in answer.upper()
-
-                            if not is_python_content(raw_text):
-                                st.warning("⚠️ This PDF does not appear to be about Python programming. Quiz generation aborted.")
-                            else:
-                                st.session_state.quiz_data = generate_quiz_from_text(
-                                    raw_text=raw_text,
-                                    num_questions=num_questions,
-                                    question_type=question_type,
-                                    difficulty=st.session_state.difficulty
-
-                                )
-                                st.session_state.checked_answers = False
-                                st.session_state.user_answers = {}
-                                st.session_state.hints = {}
-                                st.session_state.score = 0
-                                st.rerun()
+                            )
+                            st.session_state.checked_answers = False
+                            st.session_state.user_answers = {}
+                            st.session_state.hints = {}
+                            st.session_state.score = 0
+                            st.rerun()
                         except Exception as e:
                             st.error(f"❌ Failed to process uploaded PDF: {e}")
 
