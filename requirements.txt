@@ -18,7 +18,8 @@ beautifulsoup4
 langchain
 langchain_community
 mistralai
-
+markdown
+streamlit_ace
 
 
 # pip install -r requirements.txt
