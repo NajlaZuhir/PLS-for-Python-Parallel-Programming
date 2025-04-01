@@ -136,6 +136,47 @@ def render_converter_ui():
             render_code_review_feedback(st.session_state.code_review_feedback)
 
 
+def render_mode_selection():
+    st.markdown("""
+    <style>
+        button[kind="primary"] {
+            transition: all 0.2s ease;
+            border-radius: 8px !important;
+        }
+        button[kind="primary"]:hover {
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            transform: translateY(-1px);
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+    st.markdown("""
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h4 style='font-size: 24px;'>🧑‍🏫 Choose Your Mentoring Mode</h4>
+        </div>
+    """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("🐞 Debugger", key="select_debugger", use_container_width=True):
+            st.session_state.code_mentor_mode = "Debugger"
+            st.rerun()
+
+        st.markdown("""
+            <div style="text-align: center; color: gray;">Code review, issue spotting, & suggestions</div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        if st.button("🔁 Converter", key="select_converter", use_container_width=True):
+            st.session_state.code_mentor_mode = "Converter"
+            st.rerun()
+
+        st.markdown("""
+            <div style="text-align: center; color: gray;">Transform code across paradigms</div>
+        """, unsafe_allow_html=True)
+
+
 def render_code_mentor():
     """
     Renders the entire Code Mentor UI:
@@ -148,12 +189,9 @@ def render_code_mentor():
 
     # ------------------- MODE SELECTION -------------------
     if not st.session_state.code_mentor_mode:
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            mentor_mode = st.radio("Code Mentor Options", ["Debugger", "Converter"], horizontal=True)
-            if st.button("🚀 Proceed", use_container_width=True):
-                st.session_state.code_mentor_mode = mentor_mode
-                st.rerun()
+      if not st.session_state.code_mentor_mode:
+            render_mode_selection()
+
     else:
         if st.session_state.code_mentor_mode == CodeMentorMode.DEBUGGER.value:
             render_debugger_ui()
