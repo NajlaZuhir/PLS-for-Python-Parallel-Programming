@@ -120,6 +120,7 @@ def render_quiz():
         #################################################################
         elif st.session_state.source_method == "Web Link":
             with st.sidebar.expander("🔗 Web Link Quiz Settings", expanded=True):  # Auto-expands when selected
+                st.markdown("Note: Model's tokem limit is 16000.")
                 link_url = st.text_input("🔗 Enter web page URL:")
                 num_questions = st.number_input("📝 Number of questions:", min_value=1, max_value=20, value=5)
                 st.session_state.difficulty = st.radio(
@@ -210,6 +211,7 @@ def render_quiz():
         #################################################################
         else:  # "Upload PDF"
             with st.sidebar.expander("📂 Upload PDF Quiz Settings", expanded=True):  # Auto-expands when selected
+                st.markdown("Note: Model's tokem limit is 16000.")
                 uploaded_pdf = st.file_uploader("📄 Upload a PDF file", type=["pdf"])
                 num_questions = st.number_input("📝 Number of questions:", min_value=1, max_value=20, value=5)
                 st.session_state.difficulty = st.radio(
