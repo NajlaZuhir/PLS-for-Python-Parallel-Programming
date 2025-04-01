@@ -109,10 +109,9 @@ using EXCLUSIVELY this context:
 
 Requirements:
 1. Provide a question that can be answered in a short phrase or sentence.
-2. Dont provide code snippet questions.
-3. Provide a single correct answer.
-4. Reflect {difficulty} complexity in the questions.
-5. Output JSON in this format:
+2. Provide a single correct answer.
+3. Reflect {difficulty} complexity in the questions.
+4. Output JSON in this format:
 {{
   "questions": [
     {{
@@ -126,15 +125,14 @@ NO additional content. ONLY JSON.
 
 
 
-
+# 2. Define get_prompt_template
 def get_prompt_template(question_type):
-    return {
-        "Multiple Choice": PROMPT_MULTIPLE_CHOICE,
-        "True/False": PROMPT_TRUE_FALSE,
-        "Fill in the Blanks": PROMPT_FILL_IN_THE_BLANKS,
-        "Short Answer": PROMPT_SHORT_ANSWER
-    }.get(question_type, "")
-
-
-
-
+    if question_type == "Multiple Choice":
+        return PROMPT_MULTIPLE_CHOICE
+    elif question_type == "True/False":
+        return PROMPT_TRUE_FALSE
+    elif question_type == "Fill in the Blanks":
+        return PROMPT_FILL_IN_THE_BLANKS
+    elif question_type == "Short Answer":
+        return PROMPT_SHORT_ANSWER
+    return ""

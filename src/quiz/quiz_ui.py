@@ -10,8 +10,8 @@ from src.quiz.quiz_logic import (
     process_chapter,
     generate_quiz_from_text,
     generate_hint,
-    openai_chat,
-    check_answer_with_openai
+    openai_chat
+    # mistral_chat
 )
 
 def handle_question_type_change(question_type: str):
@@ -90,7 +90,7 @@ def render_quiz():
         if st.session_state.source_method == "PDF Chapter":
             with st.sidebar.expander("📖 PDF Chapter Settings", expanded=True):  # Auto-expanded for the selected method
                 selected_chapter = st.selectbox("📖 Select a chapter:", list(CHAPTER_MAP.keys()))
-                num_questions = st.number_input("📝 Number of questions:", min_value=1, max_value=50, value=2)
+                num_questions = st.number_input("📝 Number of questions:", min_value=1, max_value=50, value=3)
                 st.session_state.difficulty = st.radio(
                     " 🎚 Select Difficulty",
                     ["Easy", "Medium", "Hard"],
@@ -99,7 +99,6 @@ def render_quiz():
 
                 
                 question_type = st.selectbox("🔢 Question Type", ["Multiple Choice", "True/False", "Fill in the Blanks", "Short Answer"])
-
                 handle_question_type_change(question_type)
                 if st.button("🚀 Generate Quiz"):
                     st.session_state.quiz_data = generate_quiz(
@@ -140,18 +139,28 @@ def render_quiz():
                             html = resp.text
                             soup = BeautifulSoup(html, "html.parser")
                             raw_text = soup.get_text(separator="\n")
-                            st.session_state.quiz_data = generate_quiz_from_text(
-                                raw_text=raw_text,
-                                num_questions=num_questions,
-                                question_type=question_type,
-                                difficulty=st.session_state.difficulty
 
-                            )
-                            st.session_state.checked_answers = False
-                            st.session_state.user_answers = {}
-                            st.session_state.hints = {}
-                            st.session_state.score = 0
-                            st.rerun()
+                            def is_python_content(text):
+                                prompt = f"Determine if the following text is about Python programming. Answer only YES or NO.\n\nText: {text[:500]}"
+                                # answer = mistral_chat(prompt)
+                                answer = openai_chat(prompt)
+                                return "YES" in answer.upper()
+
+                            if not is_python_content(raw_text):
+                                st.warning("⚠️ This content does not appear to be about Python programming. Quiz generation aborted.")
+                            else:
+                                st.session_state.quiz_data = generate_quiz_from_text(
+                                    raw_text=raw_text,
+                                    num_questions=num_questions,
+                                    question_type=question_type,
+                                    difficulty=st.session_state.difficulty
+
+                                )
+                                st.session_state.checked_answers = False
+                                st.session_state.user_answers = {}
+                                st.session_state.hints = {}
+                                st.session_state.score = 0
+                                st.rerun()
                         except Exception as e:
                             st.error(f"❌ Failed to fetch link content: {e}")
 
@@ -291,9 +300,6 @@ def render_quiz():
                 explanation = q.get("explanation", "No explanation found.")
         
                 st.markdown(f"<h4>Q{i+1}. {q_text}</h4>", unsafe_allow_html=True)
-
-
-                    
                 user_answer_key = f"user_answer_{i}"
                 # Initialize the key with an empty string if it doesn't exist
                 st.session_state.user_answers.setdefault(user_answer_key, "")
@@ -364,26 +370,21 @@ def render_quiz():
                 if st.session_state.checked_answers:
                     user_answer = st.session_state.user_answers[user_answer_key]
                     is_correct = False
-
                     if question_type in ["Multiple Choice", "True/False"]:
-                        # Use exact substring matching for these types.
                         if correct_answer.lower() in str(user_answer).lower():
                             is_correct = True
                     else:
-                        # Use the AI check exclusively for open-ended questions.
-                        is_correct = check_answer_with_openai(user_answer, correct_answer)
-
+                        if correct_answer.strip().lower() == user_answer.strip().lower():
+                            is_correct = True
+        
                     if is_correct:
-                        st.markdown("<p style='color: green; font-weight: bold;'>✔ Correct!</p>", unsafe_allow_html=True)
+                        st.markdown(f"<p style='color: green; font-weight: bold;'>✔ Correct!</p>", unsafe_allow_html=True)
                         correct_count += 1
                     else:
                         st.markdown(f"<p style='color: red; font-weight: bold;'>✘ Incorrect! The correct answer is: {correct_answer}</p>", unsafe_allow_html=True)
-
                     st.info(f"**Explanation:** {explanation}")
 
-
                 st.write("---")
-
         
             # Check answers
             if not st.session_state.checked_answers:
