@@ -1,4 +1,5 @@
 import streamlit as st
+import re
 import requests
 from bs4 import BeautifulSoup
 from youtube_transcript_api import YouTubeTranscriptApi
@@ -185,7 +186,6 @@ def render_quiz():
                         st.error("⚠️ Please enter a valid YouTube URL!")
                     else:
                         try:
-                            import re
                             video_id_match = re.search(r"v=([A-Za-z0-9_-]+)", yt_url)
                             if not video_id_match:
                                 st.error("⚠️ Invalid YouTube URL format!")
@@ -198,27 +198,18 @@ def render_quiz():
                                     st.error("❌ Transcript not available for this video.")
                                     raw_text = ""
 
-                                if raw_text:
-                                    def is_python_content(text):
-                                        prompt = f"Determine if the following text is about Python programming. Answer only YES or NO.\n\nText: {text[:500]}"
-                                        answer = openai_chat(prompt)
-                                        return "YES" in answer.upper()
+                                    st.session_state.quiz_data = generate_quiz_from_text(
+                                        raw_text=raw_text,
+                                        num_questions=num_questions,
+                                        question_type=question_type,
+                                        difficulty=st.session_state.difficulty
 
-                                    if not is_python_content(raw_text):
-                                        st.warning("⚠️ The video transcript does not appear to be about Python programming. Quiz generation aborted.")
-                                    else:
-                                        st.session_state.quiz_data = generate_quiz_from_text(
-                                            raw_text=raw_text,
-                                            num_questions=num_questions,
-                                            question_type=question_type,
-                                            difficulty=st.session_state.difficulty
-
-                                        )
-                                        st.session_state.checked_answers = False
-                                        st.session_state.user_answers = {}
-                                        st.session_state.hints = {}
-                                        st.session_state.score = 0
-                                        st.rerun()
+                                    )
+                                    st.session_state.checked_answers = False
+                                    st.session_state.user_answers = {}
+                                    st.session_state.hints = {}
+                                    st.session_state.score = 0
+                                    st.rerun()
                         except Exception as e:
                             st.error(f"❌ Failed to fetch YouTube transcript: {e}")
 
