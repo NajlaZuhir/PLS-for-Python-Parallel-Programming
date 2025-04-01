@@ -186,16 +186,29 @@ def render_quiz():
                                 try:
                                     transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
                                     raw_text = "\n".join(item["text"] for item in transcript_list)
-                                except (TranscriptsDisabled, NoTranscriptFound) as te:
-                                    st.error("❌ Transcript not available for this video.")
-                                    raw_text = ""
-
+                                    
+                                    # Call generate_quiz_from_text after successfully retrieving the transcript
                                     st.session_state.quiz_data = generate_quiz_from_text(
                                         raw_text=raw_text,
                                         num_questions=num_questions,
                                         question_type=question_type,
                                         difficulty=st.session_state.difficulty
-
+                                    )
+                                    st.session_state.checked_answers = False
+                                    st.session_state.user_answers = {}
+                                    st.session_state.hints = {}
+                                    st.session_state.score = 0
+                                    st.rerun()
+                                    
+                                except (TranscriptsDisabled, NoTranscriptFound) as te:
+                                    st.error("❌ Transcript not available for this video.")
+                                    raw_text = ""
+                                    
+                                    st.session_state.quiz_data = generate_quiz_from_text(
+                                        raw_text=raw_text,
+                                        num_questions=num_questions,
+                                        question_type=question_type,
+                                        difficulty=st.session_state.difficulty
                                     )
                                     st.session_state.checked_answers = False
                                     st.session_state.user_answers = {}
@@ -204,6 +217,7 @@ def render_quiz():
                                     st.rerun()
                         except Exception as e:
                             st.error(f"❌ Failed to fetch YouTube transcript: {e}")
+
 
 
         #################################################################

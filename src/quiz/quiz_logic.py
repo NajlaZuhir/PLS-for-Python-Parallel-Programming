@@ -187,9 +187,8 @@ def generate_quiz_from_text(
 ):
     """
     Similar logic, but using raw_text instead of chapters.
-    Chunks text, builds FAISS, calls Mistral to generate questions.
+    Chunks text, builds FAISS, calls OpenAI to generate questions and explanations.
     """
-    from langchain.docstore.document import Document
 
     # Create single Document
     doc = Document(page_content=raw_text, metadata={"page": 1})
@@ -230,16 +229,22 @@ def generate_quiz_from_text(
         q_answer = q.get("answer", "")
         q_options = q.get("options", [])
 
-        # If question_type in certain categories, no options
+        # For certain question types, ensure no options are added
         if question_type in ["True/False", "Fill in the Blanks", "Short Answer"]:
             q_options = []
 
-        # Minimal explanation or "No explanation (from link-based)."
+        # Generate explanation using the vector_db
+        if q_text and q_answer:
+            # Here we use "Provided Text" as a generic source name for non-chapter content.
+            explanation = generate_explanation(vector_db, q_text, q_answer, "Provided Text")
+        else:
+            explanation = "Explanation not found."
+
         final_questions.append({
             "question": q_text,
             "options": q_options,
             "answer": q_answer,
-            "explanation": "No explanation (from link-based)."
+            "explanation": explanation
         })
 
     return {"questions": final_questions}
