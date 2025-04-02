@@ -105,7 +105,7 @@ def render_debugger_ui():
 
 def render_converter_ui():
     st.markdown("<h3 style='text-align: center;'>🔄 AI-Powered Code Converter</h3>", unsafe_allow_html=True)
-    st.markdown("Convert your parallel programming code from one paradigm to another.")
+    st.markdown("<div style='text-align: center;'>Convert your parallel programming code from one paradigm to another.</div>", unsafe_allow_html=True)
 
     if ACE_AVAILABLE:
         converter_code_input = st_ace(language='python', theme='monokai', height=500)
@@ -152,7 +152,7 @@ def render_mode_selection():
 
     st.markdown("""
         <div style="text-align: center; margin-bottom: 30px;">
-            <h4 style='font-size: 24px;'>🧑‍🏫 Choose Your Mentoring Mode</h4>
+            <h3 style='text-align: center;'>🧑‍🏫 Select Your Code Mentor Mode</h3>
         </div>
     """, unsafe_allow_html=True)
 
@@ -179,32 +179,46 @@ def render_mode_selection():
 
 def render_code_mentor():
     """
-    Renders the entire Code Mentor UI:
-    1. Mode Selection (Debugger or Converter)
-    2. Debugger: Code Review
-    3. Converter: Code Conversion
+    Unified Code Mentor UI logic with chatbot-style mode selection and current mode banner.
     """
-    st.markdown("<h2 style='text-align: center;'>🛠️ Code Mentor Mode</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center;'>Select one of the following code mentoring options: <b>Debugger</b> or <b>Converter</b>.</p>", unsafe_allow_html=True)
+    # Initialize session state variables
+    for key, value in {
+        "code_mentor_mode": None,
+        "code_review_feedback": "",
+        "code_converter_feedback": "",
+        "code_input": "",
+        "converted_code_input": ""
+    }.items():
+        if key not in st.session_state:
+            st.session_state[key] = value
 
-    # ------------------- MODE SELECTION -------------------
+    # Show mode selection if none selected yet
     if not st.session_state.code_mentor_mode:
-      if not st.session_state.code_mentor_mode:
-            render_mode_selection()
+        render_mode_selection()
+        st.stop()
 
-    else:
-        if st.session_state.code_mentor_mode == CodeMentorMode.DEBUGGER.value:
-            render_debugger_ui()
-        elif st.session_state.code_mentor_mode == CodeMentorMode.CONVERTER.value:
-            render_converter_ui()
+    # ✅ Mode has been selected — show current mode banner
+    if st.session_state.code_mentor_mode in [mode.value for mode in CodeMentorMode]:
+        st.markdown(f"""
+            <div style='text-align:center; color:#666; margin-top:10px;'>
+                📌 Current Mode: <b>{st.session_state.code_mentor_mode}</b>
+            </div>
+        """, unsafe_allow_html=True)
 
-        st.markdown("<br>", unsafe_allow_html=True)
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            if st.button("🔄 Change Code Mentor Option", use_container_width=True):
-                st.session_state.code_mentor_mode = None
-                st.session_state.code_review_feedback = ""
-                st.session_state.code_converter_feedback = ""
-                st.session_state.code_input = ""
-                st.session_state.converted_code_input = ""
-                st.rerun()
+    # 🧠 Launch selected tool UI
+    if st.session_state.code_mentor_mode == CodeMentorMode.DEBUGGER.value:
+        render_debugger_ui()
+    elif st.session_state.code_mentor_mode == CodeMentorMode.CONVERTER.value:
+        render_converter_ui()
+
+    # 🔄 Reset Option
+    st.markdown("<br>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button("🔄 Change Code Mentor Option", use_container_width=True):
+            st.session_state.code_mentor_mode = None
+            st.session_state.code_review_feedback = ""
+            st.session_state.code_converter_feedback = ""
+            st.session_state.code_input = ""
+            st.session_state.converted_code_input = ""
+            st.rerun()
