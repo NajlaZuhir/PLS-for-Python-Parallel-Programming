@@ -92,22 +92,20 @@ def render_chat(current_user, chat_archive: ChatArchive):
         st.stop()
 
     # ------------ CHAT DISPLAY ------------ #
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"], avatar="👨‍🎓" if message["role"] == "user" else "🤖"):
-            st.markdown(f"""
-                <div style='padding: 12px 18px; background-color: {"#f0f8ff" if message["role"]=="user" else "#e8f5e9"};
-                            border-radius: 8px; font-size: 16px; line-height: 1.6;'>{message["content"]}</div>
-            """, unsafe_allow_html=True)
 
-    # ------------ CHAT INPUT ------------ #
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.write(message["content"])
+
+    # --------------------CHAT INPUT------------
     if prompt := st.chat_input("💬 What would you like to know?"):
-        with st.chat_message("user", avatar="👨‍🎓"):
-            st.markdown(f"<div style='padding:10px 15px;'>{prompt}</div>", unsafe_allow_html=True)
+        with st.chat_message("user"):
+            st.write(prompt)
         st.session_state.messages.append({"role": "user", "content": prompt})
 
-        with st.chat_message("assistant", avatar="🤖"):
+        with st.chat_message("assistant"):
             response = generate_response(prompt, mode=st.session_state.chat_mode, top=5)
-            st.markdown(f"<div style='padding:10px 15px;'>{response}</div>", unsafe_allow_html=True)
+            st.write(response)
         st.session_state.messages.append({"role": "assistant", "content": response})
 
         if len(st.session_state.messages) == 2:
@@ -115,3 +113,4 @@ def render_chat(current_user, chat_archive: ChatArchive):
 
         chat_archive.archive_conversation(st.session_state.messages, st.session_state.chat_mode, current_user)
         st.rerun()
+
