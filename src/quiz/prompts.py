@@ -97,31 +97,36 @@ Requirements:
 NO additional content. ONLY JSON.
 """
 
-PROMPT_SHORT_ANSWER = """"You are a precise technical assistant that always outputs valid JSON."
+PROMPT_MULTIPLE_SELECT = """"You are a precise technical assistant that always outputs valid JSON."
 Difficulty: {difficulty}.
 
 Additional Instructions: {dynamic_instruction}
 
-Generate {num_questions} short-answer questions about: "{topic}" 
+Generate {num_questions} multiple select questions about: "{topic}" 
 using EXCLUSIVELY this context:
 
 {context}
 
 Requirements:
-1. Provide a question that can be answered in a short phrase or sentence.
-2. Provide a single correct answer.
-3. Reflect {difficulty} complexity in the questions.
-4. Output JSON in this format:
+1. Each question must provide several options.
+2. There can be more than one correct answer.
+3. Provide answer options labeled (A), (B), (C), (D), etc.
+4. Clearly indicate the correct answers as a list (e.g. ["A", "C"]).
+5. Reflect {difficulty} complexity in the questions.
+6. Output JSON in this format:
 {{
   "questions": [
     {{
       "question": "...",
-      "answer": "..."
+      "options": ["A) ...", "B) ...", "C) ...", "D) ..."],
+      "answer": ["A", "C"]
     }}
   ]
 }}
+
 NO additional content. ONLY JSON.
 """
+
 
 
 
@@ -133,6 +138,6 @@ def get_prompt_template(question_type):
         return PROMPT_TRUE_FALSE
     elif question_type == "Fill in the Blanks":
         return PROMPT_FILL_IN_THE_BLANKS
-    elif question_type == "Short Answer":
-        return PROMPT_SHORT_ANSWER
+    elif question_type == "Multiple Select":
+        return PROMPT_MULTIPLE_SELECT
     return ""

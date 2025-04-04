@@ -117,7 +117,7 @@ def render_quiz():
                 )
 
                 
-                question_type = st.selectbox("🔢 Question Type", ["Multiple Choice", "True/False", "Fill in the Blanks", "Short Answer"])
+                question_type = st.selectbox("🔢 Question Type", ["Multiple Choice", "True/False", "Fill in the Blanks", "Multiple Select"])
                 handle_question_type_change(question_type)
                 if st.button("🚀 Generate Quiz"):
                     st.session_state.quiz_data = generate_quiz(
@@ -146,7 +146,7 @@ def render_quiz():
                     ["Easy", "Medium", "Hard"],
                     index=["Easy", "Medium", "Hard"].index(st.session_state.difficulty)
                 )
-                question_type = st.selectbox("🔢 Question Type", ["Multiple Choice", "True/False", "Fill in the Blanks", "Short Answer"])
+                question_type = st.selectbox("🔢 Question Type", ["Multiple Choice", "True/False", "Fill in the Blanks", "Multiple Select"])
                 handle_question_type_change(question_type)
                 
                 if st.button("🌍 Generate Quiz from Link"):
@@ -188,7 +188,7 @@ def render_quiz():
                     ["Easy", "Medium", "Hard"],
                     index=["Easy", "Medium", "Hard"].index(st.session_state.difficulty)
                 )
-                question_type = st.selectbox("🔢 Question Type", ["Multiple Choice", "True/False", "Fill in the Blanks", "Short Answer"])
+                question_type = st.selectbox("🔢 Question Type", ["Multiple Choice", "True/False", "Fill in the Blanks", "Multiple Select"])
                 handle_question_type_change(question_type)
 
                 if st.button("🎬 Generate Quiz from YouTube"):
@@ -251,7 +251,7 @@ def render_quiz():
                     ["Easy", "Medium", "Hard"],
                     index=["Easy", "Medium", "Hard"].index(st.session_state.difficulty)
                 )
-                question_type = st.selectbox("🔢 Question Type", ["Multiple Choice", "True/False", "Fill in the Blanks", "Short Answer"])
+                question_type = st.selectbox("🔢 Question Type", ["Multiple Choice", "True/False", "Fill in the Blanks", "Multiple Select"])
                 handle_question_type_change(question_type)
 
                 if st.button("📑 Generate Quiz from Uploaded PDF"):
@@ -351,10 +351,26 @@ def render_quiz():
                             f"✅ Your Selection: {selected_tf}</p>", 
                             unsafe_allow_html=True
                         )
+                elif question_type == "Multiple Select":
+                    # Use st.multiselect for multiple select questions
+                    selected_answers = st.multiselect(
+                        f"Your answer for Q{i+1} (select all that apply)",
+                        q_options,
+                        key=f"multiselect_{i}"
+                    )
+                    st.session_state.user_answers[user_answer_key] = selected_answers
+                    if not selected_answers:
+                        st.markdown("<p style='color: #888;'>No answer selected yet.</p>", unsafe_allow_html=True)
+                    else:
+                        st.markdown(
+                            f"<p style='background-color:#eef8ff; padding:5px; border-radius:5px;'>"
+                            f"✅ Your Selection: {', '.join(selected_answers)}</p>", 
+                            unsafe_allow_html=True
+                        )
 
         
                 # Hints if question_type is fill-in, short
-                elif question_type in ["Fill in the Blanks", "Short Answer"]:
+                elif question_type == "Fill in the Blanks":
                     st.session_state.user_answers[user_answer_key] = st.text_input(
                         f"Your answer for Q{i+1}",
                         key=f"text_{i}"
@@ -379,8 +395,12 @@ def render_quiz():
                     if question_type in ["Multiple Choice", "True/False"]:
                         if correct_answer.lower() in str(user_answer).lower():
                             is_correct = True
+                    elif question_type == "Multiple Select":
+                        # Here, assume both user_answer and correct_answer are lists of strings
+                        # Convert to sets and check for exact match (you can adjust for partial credit if needed)
+                        if set(user_answer) == set(correct_answer):
+                            is_correct = True
                     else:
-                        # For fill-in and short-answer, do a fuzzier check
                         # For fill-in and short-answer, use partial_ratio for more semantic matching
                         correct = correct_answer.lower()
                         user = user_answer.lower()
