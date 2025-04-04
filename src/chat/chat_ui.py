@@ -62,9 +62,13 @@ def render_chat(current_user, chat_archive: ChatArchive):
             chat_id = chat["session_id"]
             chat_title = st.session_state.chat_titles.get(chat_id, get_chat_title(chat["messages"]))
 
+            # Determine button style based on whether this chat is selected
+            button_style = "primary" if chat_id == st.session_state.current_chat_id else "secondary"
+
             col1, col2 = st.columns([4, 1])
             with col1:
-                if st.button(chat_title, key=f"chat_{chat_id}", use_container_width=True):
+                # Use 'type=button_style' to highlight the selected chat
+                if st.button(chat_title, key=f"chat_{chat_id}", use_container_width=True, type=button_style):
                     st.session_state.current_chat_id = chat_id
                     st.session_state.messages = chat["messages"]
                     st.session_state.chat_mode = chat["mode"]
@@ -74,6 +78,7 @@ def render_chat(current_user, chat_archive: ChatArchive):
                 if st.button("🗑️", key=f"delete_{chat_id}", help="Delete chat"):
                     chat_archive.delete_chat(chat_id)
                     st.rerun()
+
 
     # ------------ MODE SELECTION ------------ #
     if not st.session_state.mode_selected and not st.session_state.current_chat_id:
@@ -105,7 +110,8 @@ def render_chat(current_user, chat_archive: ChatArchive):
 
         with st.chat_message("assistant"):
             response = generate_response(prompt, mode=st.session_state.chat_mode, top=5)
-            st.write(response)
+            # st.write(response)
+            st.markdown(response, unsafe_allow_html=True)
         st.session_state.messages.append({"role": "assistant", "content": response})
 
         if len(st.session_state.messages) == 2:
