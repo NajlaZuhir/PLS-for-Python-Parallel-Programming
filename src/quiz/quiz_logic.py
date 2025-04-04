@@ -102,7 +102,7 @@ def generate_question_skeleton(chapter_name: str, num_questions: int, question_t
     context = "\n\n".join(context_chunks)
 
     # NEW: Limit the context to a maximum number of characters (e.g., 5000)
-    max_context_chars = 5000
+    max_context_chars = 10000
     if len(context) > max_context_chars:
         context = context[:max_context_chars]
 
@@ -240,3 +240,4 @@ def generate_quiz_from_text(
         })
 
     return {"questions": final_questions}
+

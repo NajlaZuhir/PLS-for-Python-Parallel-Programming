@@ -362,9 +362,9 @@ def render_quiz():
                         if correct_answer.lower() in str(user_answer).lower():
                             is_correct = True
                     else:
-                        if correct_answer.strip().lower() == user_answer.strip().lower():
+                        if correct_answer.strip().lower() in user_answer.strip().lower() or user_answer.strip().lower() in correct_answer.strip().lower():
                             is_correct = True
-        
+
                     if is_correct:
                         st.markdown(f"<p style='color: green; font-weight: bold;'>✔ Correct!</p>", unsafe_allow_html=True)
                         correct_count += 1
