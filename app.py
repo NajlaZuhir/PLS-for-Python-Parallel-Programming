@@ -59,6 +59,10 @@ if "hints" not in st.session_state:
 if "source_method" not in st.session_state:
     st.session_state.source_method = "PDF Chapter"
 
+# Initialize used_chunks for quiz logic
+if "used_chunks" not in st.session_state:
+    st.session_state.used_chunks = set()
+
 # Code Mentor-related states
 if "code_mentor_mode" not in st.session_state:
     st.session_state.code_mentor_mode = None

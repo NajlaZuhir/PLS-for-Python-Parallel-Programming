@@ -1,6 +1,7 @@
 import streamlit as st
 import re
 import requests
+import difflib
 from bs4 import BeautifulSoup
 from youtube_transcript_api import YouTubeTranscriptApi
 from src.quiz.openai_client import openai_chat
@@ -14,6 +15,23 @@ from src.quiz.quiz_logic import (
     openai_chat
     # mistral_chat
 )
+
+# Add the partial_ratio function here:
+def partial_ratio(short_text: str, long_text: str) -> float:
+    """
+    Returns the maximum similarity ratio of short_text against
+    any substring of long_text using difflib.SequenceMatcher.
+    """
+    max_ratio = 0.0
+    len_s = len(short_text)
+    len_l = len(long_text)
+    for start_idx in range(len_l - len_s + 1):
+        substring = long_text[start_idx : start_idx + len_s]
+        ratio = difflib.SequenceMatcher(None, short_text, substring).ratio()
+        if ratio > max_ratio:
+            max_ratio = ratio
+    return max_ratio
+
 
 def handle_question_type_change(question_type: str):
     """
@@ -362,7 +380,12 @@ def render_quiz():
                         if correct_answer.lower() in str(user_answer).lower():
                             is_correct = True
                     else:
-                        if correct_answer.strip().lower() in user_answer.strip().lower() or user_answer.strip().lower() in correct_answer.strip().lower():
+                        # For fill-in and short-answer, do a fuzzier check
+                        # For fill-in and short-answer, use partial_ratio for more semantic matching
+                        correct = correct_answer.lower()
+                        user = user_answer.lower()
+                        similarity = partial_ratio(correct, user)
+                        if similarity >= 0.7:
                             is_correct = True
 
                     if is_correct:
