@@ -88,22 +88,12 @@ Requirements:
 # 3. Generate Questions for a Chapter
 #################################################
 def generate_question_skeleton(chapter_name: str, num_questions: int, question_type: str, difficulty="Easy"):
-    """
-    Builds a question skeleton from a specified chapter:
-    - Loads/filters chunks from FAISS
-    - Creates appropriate prompt
-    - Calls Mistral for question generation
-    """
     vector_db = process_chapter(chapter_name)
-
-    # Manage used_chunks to avoid repeated usage
-    if "used_chunks" not in st.session_state:
-        st.session_state.used_chunks = set()
-
+    
+    # Get all documents and filter out used chunks
     all_docs = vector_db.similarity_search(query="", k=len(vector_db.docstore._dict))
     filtered_docs = [doc for doc in all_docs if doc.metadata.get("chunk_id") not in st.session_state.used_chunks]
 
-    # If not enough new docs remain, reset used chunks
     if len(filtered_docs) < 5:
         st.session_state.used_chunks.clear()
         filtered_docs = all_docs
@@ -111,14 +101,16 @@ def generate_question_skeleton(chapter_name: str, num_questions: int, question_t
     context_chunks = [doc.page_content.strip() for doc in filtered_docs]
     context = "\n\n".join(context_chunks)
 
+    # NEW: Limit the context to a maximum number of characters (e.g., 5000)
+    max_context_chars = 5000
+    if len(context) > max_context_chars:
+        context = context[:max_context_chars]
+
     dynamic_instruction = get_dynamic_instruction(difficulty)
-    
-    # Non-code-based question
     template_str = get_prompt_template(question_type)
     if not template_str:
         return {"questions": []}
 
-    # Build final prompt via LangChain ChatPromptTemplate
     messages = ChatPromptTemplate.from_template(template_str).format_messages(
         num_questions=num_questions,
         topic=chapter_name,
@@ -131,7 +123,6 @@ def generate_question_skeleton(chapter_name: str, num_questions: int, question_t
     response_text = openai_chat(final_prompt)
     response_text = extract_json(response_text)
 
-    # Mark chunks as used
     for doc in filtered_docs:
         st.session_state.used_chunks.add(doc.metadata["chunk_id"])
 
@@ -140,6 +131,7 @@ def generate_question_skeleton(chapter_name: str, num_questions: int, question_t
     except json.JSONDecodeError:
         data = {"questions": []}
     return data
+
 
 def generate_quiz(chapter_name, num_questions, question_type="Multiple Choice", difficulty="Easy"):
     """
