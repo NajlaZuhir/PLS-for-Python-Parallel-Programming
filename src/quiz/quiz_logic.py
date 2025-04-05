@@ -150,7 +150,7 @@ def generate_quiz(chapter_name, num_questions, question_type="Multiple Choice", 
         q_options = q.get("options", [])
 
         # If question_type is in certain categories, no options are needed
-        if question_type in ["True/False", "Fill in the Blanks", "Short Answer"]:
+        if question_type in ["True/False", "Fill in the Blanks"]:
             q_options = []
 
         # Generate explanation if possible
@@ -222,7 +222,7 @@ def generate_quiz_from_text(
         q_options = q.get("options", [])
 
         # For certain question types, ensure no options are added
-        if question_type in ["True/False", "Fill in the Blanks", "Short Answer"]:
+        if question_type in ["True/False", "Fill in the Blanks"]:
             q_options = []
 
         # Generate explanation using the vector_db
@@ -240,4 +240,3 @@ def generate_quiz_from_text(
         })
 
     return {"questions": final_questions}
-
