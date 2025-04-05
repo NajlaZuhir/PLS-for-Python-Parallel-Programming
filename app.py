@@ -132,9 +132,12 @@ with st.sidebar:
                 "hints": {},
                 "code_review_feedback": "",
                 "code_converter_feedback": "",
-                "code_mentor_mode": None
+                "code_mentor_mode": None,
+                "question": None,
+                "question_type_index": 0
             })
             st.rerun()
+
 
     # ------------------- Main Activity Selection -------------------
     # ------------------- Main Activity Selection -------------------
@@ -176,8 +179,8 @@ if st.session_state.activity is None:
         st.markdown("<p style='text-align: center; color: #666; font-size: 14px;'> </p>", unsafe_allow_html=True)
         
         # New Challenges button with upcoming note
-        if st.button("🏆 Challenges", use_container_width=True):
-            st.session_state.activity = "Challenges"
+        if st.button("📅 My Planner", use_container_width=True):
+            st.session_state.activity = "📅 My Planner"
             st.rerun()
         st.markdown("<p style='text-align: center; color: #666; font-size: 14px;'>Upcoming...</p>", unsafe_allow_html=True)
 
