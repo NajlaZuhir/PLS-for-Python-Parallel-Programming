@@ -13,7 +13,9 @@ mistralai
 markdown
 streamlit_ace
 
-# you need to install docker from link https://docs.docker.com/desktop/setup/install/windows-install/
+# this is challeges
+#  you need to install docker from link https://docs.docker.com/desktop/setup/install/windows-install/
 # thn run "docker pull python:3.9-slim" in terminal
+# keep docker.desktop open 
 
 # pip install -r requirements.txt
