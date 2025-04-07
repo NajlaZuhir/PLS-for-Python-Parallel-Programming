@@ -133,7 +133,7 @@ Ensure Docker is installed and running on your machine (required for Code Challe
 streamlit run app.py
 
 ----
-Usage 📚
+## Usage 📚
 Adaptive Quiz Module
 Content Source Selection:
 Select your quiz source (PDF, Web Link, YouTube, Upload PDF) and configure quiz parameters (difficulty, question type, etc.).
