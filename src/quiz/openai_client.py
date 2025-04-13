@@ -17,7 +17,6 @@ if not openai_api_key:
 openai.api_key = openai_api_key
 
 def openai_chat(prompt_text: str) -> str:
-    # Split prompt into system and user messages as before
     lines = prompt_text.split('\n', 1)
     system_message = lines[0].strip()
     user_message = lines[1].strip() if len(lines) > 1 else ''
@@ -27,14 +26,14 @@ def openai_chat(prompt_text: str) -> str:
         {"role": "user", "content": user_message}
     ]
 
-
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=messages,
-        temperature=0.7,
-        max_tokens=1500  # Lowered from 3000 to 1500
-    )
-    return response.choices[0].message.content.strip()
-    # except (APIConnectionError, APIError) as e:
-    #     st.error(f"🌐 Connection error: {e}")
-    #     return ""
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",  # Ensure you are using the correct model
+            messages=messages,
+            temperature=0.7,
+            max_tokens=1500
+        )
+        return response['choices'][0]['message']['content'].strip()  # Properly extract the message content
+    except Exception as e:
+        st.error(f"💥 OpenAI error: {e}")
+        return ""
