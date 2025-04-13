@@ -1,5 +1,6 @@
 streamlit==1.43.2
 openai
+openai>=1.0.0
 faiss-cpu
 numpy
 python-dotenv
