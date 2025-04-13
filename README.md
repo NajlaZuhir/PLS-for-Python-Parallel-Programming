@@ -1,88 +1,163 @@
-# Chatbot Architecture Overview
+# Personalized Learning App for Parallel & Distributed Computing using Python
 
-## 1. Document Preprocessing & Index Building
+Welcome to the **Personalized Learning App**! This interactive platform, built with **Streamlit**, is designed to help you master parallel and distributed computing in Python. The app offers three powerful features:
 
-### 1.1. build_index.py (Run Once)
-- **Download Book (PDF):**
-  - Download the book in PDF format through a provided link.
-- **Extract Text:**
-  - Extract all text from the book.
-- **Build Vector Store:**
-  - Uses the `build_vector_store` function from `vector_store_utils.py`.
+- **Adaptive Quiz Module 🎓**  
+- **Chatbot 🤖**  
+- **Code Mentor 👨‍💻**
 
-### 1.2. vector_store_utils.py
-- **Function: build_vector_store**
-  - **Splitting Text:**
-    - Splits text into chunks using `chunk_size=500` and `overlap=50`.
-  - **Computing Embeddings:**
-    - Computes embeddings for each chunk using OpenAI’s `"text-embedding-ada-002"` model.
-  - **Building FAISS Index:**
-    - Builds a FAISS index for similarity searches.
-  - **Saving Data:**
-    - Saves the FAISS index and chunks using the `pickle` module in the main project directory for later use.
-- **Function: load_vector_store**
-  - **Reloading Data:**
-    - Reloads the previously stored `faiss_index.pkl` and `chunks.pkl`.
-  - **Usage:**
-    - Used by `chat_logic.py` to access the vector store.
+---
 
-## 2. User Interaction via Chat UI
+## Features
 
-### chat_ui.py (Chat Interface)
-- **Mode Selection:**
-  - Allows the user to select a mode (“Normal” or “Socratic”).
-- **Chat Management:**
-  - Users can start a new chat or select an existing one.
-  - The user’s message is added to the chat history.
-- **Display:**
-  - Displays the generated answer within the chat interface.
+### Adaptive Quiz Module 🎓
+- **Dynamic Quiz Generation:**  
+  Generate quizzes from various sources (PDF chapters, web links, YouTube videos, or uploaded PDFs).
+- **Intelligent Content Processing:**  
+  Content is loaded, split into chunks, and embedded. A FAISS vector store is built for similarity searches.
+- **Dynamic Prompt Construction:**  
+  Merges real-time context with pre-defined templates (for Multiple Choice, True/False, etc.) and calls the OpenAI API (GPT-3.5-Turbo) to generate questions.
+- **Adaptive Difficulty:**  
+  Quiz difficulty adjusts based on your performance.
 
-## 3. Chat Processing
+**Architecture Overview:**
+1. **Content Retrieval & Processing**
+   - **Source Selection (`quiz_ui.py`):** User selects quiz source and sets parameters (number of questions, question type, difficulty).
+   - **Content Loading:**  
+     - **PDF Chapters:** Retrieve PDF path from `chapters.py` using a chapter-to-PDF mapping.  
+     - **Other Sources:** Fetch and parse content from web links, YouTube, or uploaded PDFs.
+   - **Document Processing & FAISS Indexing (`faiss_utils.py`):** Load content, split into chunks, generate embeddings via HuggingFace, and build a FAISS vector store.
+2. **Prompt Construction & API Integration**
+   - **Prompt Templates (`prompts.py`):** Pre-defined templates with dynamic instructions based on selected difficulty.
+   - **Dynamic Prompt Construction:** Merge real-time context (e.g., chapter/topic, question count) into the selected template.
+   - **API Call (`openai_client.py`):** Sends the final prompt to the OpenAI API (using GPT-3.5-Turbo) to generate quiz questions in JSON format.
+3. **Quiz Generation & Adaptive UI**
+   - **Quiz Logic (`quiz_logic.py`):** Parses API responses to generate a question skeleton, explanations, and hints.
+   - **Display & Adaptation (`quiz_ui.py`):** Renders questions and feedback via Streamlit, captures user answers, and adapts difficulty for subsequent rounds.
 
-### chat_logic.py
-- **Embedding the Prompt:**
-  - Converts the user’s prompt into an embedding using the `"text-embedding-ada-002"` model.
-- **Searching the Index:**
-  - Uses the embedding to search the FAISS index for the most similar document chunks.
-  - Retrieves the top matching passages.
-- **Context Formatting:**
-  - Formats the retrieved passages into numbered passages.
-- **System Message Creation:**
-  - Gets the system message based on the selected mode (Normal or Socratic).
-- **Response Generation:**
-  - Generates a response using the system message and the GPT-4 model.
+---
 
-## 4. Database Operations
+### Chatbot 🤖
+- **Conversational Learning:**  
+  Engage in a chat to ask questions and receive guidance on parallel and distributed computing topics.
+- **Document Preprocessing & Indexing:**  
+  Download a PDF book, extract and split the text, compute embeddings with OpenAI's `text-embedding-ada-002`, and build a FAISS index.
+- **Chat Processing (`chat_logic.py`):**  
+  Embeds user prompts, retrieves similar passages from the FAISS index, and generates responses using GPT-4.
+- **Conversation Management:**  
+  Users can choose between Normal and Socratic modes. Chat history is archived in a SQLite database for future reference.
 
-- **Archiving Conversations:**
-  - Archives the conversation in a SQLite database via `db_operations.py`.
-- **Chat History:**
-  - Archived conversations are used to populate the chat history in the sidebar for future reference.
-- **Deletion Functionality:**
-  - Provides functionalities for deleting old conversations.
+**Architecture Overview:**
+1. **Document Preprocessing & Index Building**
+   - **Build Index (`build_index.py`):** Downloads a PDF, extracts text, splits it, computes embeddings, and builds a FAISS index.
+   - **Vector Store Utilities (`vector_store_utils.py`):** Saves and reloads the FAISS index and chunks (using pickle).
+2. **User Interaction via Chat UI (`chat_ui.py`):**  
+   Allows mode selection, chat management, and displays responses.
+3. **Chat Processing (`chat_logic.py`):**  
+   Embeds prompts, searches the index for relevant passages, and generates responses using GPT-4.
+4. **Database Operations (`db_operations.py`):**  
+   Archives conversations and manages chat history.
 
- # Code Mentor Architecture Overview
+---
 
-The Code Mentor system supports two main features—code review (debugging) and code conversion—using Mistral’s API.
+### Code Mentor 👨‍💻
+- **Interactive Code Assistance:**  
+  Improve your parallel programming skills with tools for code review, conversion, and challenges.
+- **Debugger Mode:**  
+  Reviews your code for syntax errors, deadlocks, race conditions, and inefficiencies using the Mistral API (mistral-large-latest).
+- **Converter Mode:**  
+  Converts your code from one parallel programming paradigm to another (e.g., multiprocessing to threading) with detailed explanations, powered by the Mistral API.
+- **Challenges Mode:**  
+  Generates dynamic coding challenges using the OpenAI API (GPT-3.5-Turbo) and lets you run your code in a secure Docker sandbox for immediate feedback.
 
-## 1. Core Modules
+**Architecture Overview:**
 
-### 1.1. code_convertor.py
-- **Purpose:**  
-  Converts parallel programming code from one paradigm to another (e.g., from multiprocessing to threading) and provides an explanation using Mistral.
+1. **Core Modules**
+   - **Code Converter Module (`code_convertor.py`)**
+     - **Purpose:** Converts parallel programming code from one paradigm to another.
+     - **Key Components:**
+       - *Mistral API Integration:* Calls Mistral’s chat completion endpoint.
+       - *Prompt Construction:* Builds detailed prompts for conversion and explanation.
+       - *Retry Logic:* Implements retries for rate limits.
+     - **Output:** Returns converted code and an explanation.
+   - **Code Review Module (`code_review.py`)**
+     - **Purpose:** Reviews code to identify issues and suggest improvements.
+     - **Key Components:**
+       - *Mistral API Integration:* Uses Mistral’s chat endpoint for analysis.
+       - *Prompt Construction:* Forms concise prompts for code review.
+       - *Retry Logic:* Handles rate limits similar to the converter.
+     - **Output:** Returns review feedback as a string.
+   - **Code Challenges Module (`code_challenges.py`)**
+     - **Purpose:** Dynamically generates interactive quiz questions and supports code execution.
+     - **Key Components:**
+       - *OpenAI API Integration:* Uses GPT-3.5-Turbo to generate questions in JSON.
+       - *Prompt Construction:* Creates prompts based on challenge types (e.g., `write_code`, `complete_code`, `fix_bug`).
+       - *JSON Extraction & Validation:* Ensures responses have the required keys (`type`, `prompt`, `instructions`, `code`, `test_case`).
+       - *Docker-based Code Execution:* Executes user code in a Docker sandbox (using `python:3.9-slim`), capturing output and errors.
+     - **Output:** Returns a JSON object representing a coding challenge along with execution feedback.
+2. **User Interface Module (`code_mentor_ui.py`)**
+   - **Purpose:**  
+     Provides an interactive Streamlit interface for Code Mentor functionalities.
+   - **Key Components:**
+     - **Mode Selection:**  
+       Users choose between:
+       - **Debugger Mode:** Reviews code and provides feedback.
+       - **Converter Mode:** Converts code to alternative paradigms with explanations.
+       - **Challenges Mode:** Generates dynamic challenges and enables code execution.
+     - **User Input Areas:**  
+       Dedicated code editors for input; Converter Mode includes a target paradigm dropdown.
+     - **Results Display:**  
+       Renders output (review feedback, converted code, or challenge details) and maintains session state for seamless interaction.
+   - **Docker Requirement:**  
+     Docker must be installed and running for executing code challenges in a secure sandbox.
 
-### 1.2. code_review.py
-- **Purpose:**  
-  Reviews provided parallel programming code to identify issues (e.g., syntax errors, potential deadlocks, race conditions) and suggests improvements using Mistral.
+---
 
-## 2. Code Mentor UI
+## Installation 🔧
+### 1. Install Dependencies
+```bash
+pip install -r requirements.txt
 
-### code_mentor.py
-- **Purpose:**  
-  Provides an interactive user interface for both code review and code conversion tasks.
-- **Features:**  
-  - **Debugger Mode:**  
-    For code review, where users input code to receive debugging and review feedback.
-  - **Converter Mode:**  
-    For code conversion, where users input code and select a target paradigm to receive converted code along with an explanation.
+
+### 2. Set Up Environment Variables
+Create a .env file in the project root with:
+
+OPENAI_API_KEY=your_openai_api_key_here
+MISTRAL_API_KEY=your_mistral_api_key_here
+
+### 3. Install Docker
+Ensure Docker is installed and running on your machine (required for Code Challenges mode).
+
+### 4. Run the Application
+
+streamlit run app.py
+
+----
+## Usage 📚
+Adaptive Quiz Module
+Content Source Selection:
+Select your quiz source (PDF, Web Link, YouTube, Upload PDF) and configure quiz parameters (difficulty, question type, etc.).
+
+Quiz Generation:
+Generate adaptive quizzes that adjust based on your performance.
+
+Chatbot Module
+Conversational Interface:
+Engage in a chat to ask questions or get guidance on parallel and distributed computing topics.
+
+Mode Selection:
+Choose between Normal and Socratic modes for varied interaction styles.
+
+Code Mentor Module
+Mode Selection:
+Choose one of the following modes:
+
+Debugger Mode:
+Paste your code to receive a detailed review and actionable suggestions.
+
+Converter Mode:
+Input your code, select a target paradigm, and get your code converted along with a brief explanation.
+
+Challenges Mode:
+Generate interactive coding challenges, edit the provided code using the built-in editor, and run it in a secure Docker sandbox for immediate feedback.
 
