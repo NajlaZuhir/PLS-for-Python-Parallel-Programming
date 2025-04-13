@@ -12,6 +12,9 @@ langchain_community
 mistralai
 markdown
 streamlit_ace
+sentence-transformers
+transformers
+
 
 # this is challeges
 #  you need to install docker from link https://docs.docker.com/desktop/setup/install/windows-install/
