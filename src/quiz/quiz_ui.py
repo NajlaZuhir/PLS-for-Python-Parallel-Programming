@@ -387,7 +387,7 @@ def render_quiz():
                             st.session_state.hints[hint_key] = "Hint not implemented for this source."
                         st.rerun()
                     if st.session_state.hints[hint_key]:
-                        st.info(f"Hint: {st.session_state.hints[hint_key]}")
+                        st.info(f"{st.session_state.hints[hint_key]}")
         
                 if st.session_state.checked_answers:
                     user_answer = st.session_state.user_answers[user_answer_key]
