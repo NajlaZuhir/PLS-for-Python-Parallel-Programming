@@ -11,6 +11,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 if not openai.api_key:
     raise ValueError("Please set your OPENAI_API_KEY in your .env file.")
 
+
 def extract_json(text):
     """Extracts a JSON object from a string by locating the first '{' and the last '}'."""
     try:
@@ -52,7 +53,8 @@ def generate_question(context="parallel and distributed computing using python")
     prompt = (
         f"Generate a quiz question about {context} for a Python quiz system. "
         f"The question should be of the type '{current_type}'. "
-        "Ensure that the code uses only Python's standard library (no external packages such as numpy or joblib). "
+        "Ensure that the code uses only modules that come with the default Python installation. "
+        "Do not use any external packages (for example, do not import numpy, requests, joblib, etc.). "
         "For 'complete_code' questions, include a clear placeholder marker such as '### INSERT CODE HERE' in the code snippet, "
         "and add a comment above the placeholder describing what code is expected. "
         "Return only valid JSON with exactly the following keys:\n"

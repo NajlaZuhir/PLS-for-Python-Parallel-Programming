@@ -1,5 +1,5 @@
 streamlit==1.43.2
-openai
+openai==0.28.1
 faiss-cpu
 numpy
 python-dotenv
@@ -9,9 +9,11 @@ youtube_transcript_api
 beautifulsoup4
 langchain
 langchain_community
-mistralai
 markdown
 streamlit_ace
+mistralai
+sentence-transformers
+transformers
 
 # this is challeges
 #  you need to install docker from link https://docs.docker.com/desktop/setup/install/windows-install/

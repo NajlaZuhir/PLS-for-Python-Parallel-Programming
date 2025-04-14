@@ -5,6 +5,7 @@ import json
 import random
 import streamlit as st
 
+
 from langchain.prompts import ChatPromptTemplate
 from langchain.docstore.document import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -112,15 +113,14 @@ def generate_question_skeleton(chapter_name: str, num_questions: int, question_t
         return {"questions": []}
 
     messages = ChatPromptTemplate.from_template(template_str).format_messages(
-        num_questions=num_questions,
-        topic=chapter_name,
-        context=context,
-        difficulty=difficulty,
-        dynamic_instruction=dynamic_instruction
-    )
-    final_prompt = "\n\n".join(msg.content for msg in messages)
+    num_questions=num_questions,
+    topic=chapter_name,
+    context=context,
+    difficulty=difficulty,
+    dynamic_instruction=dynamic_instruction
+)
+    response_text = openai_chat(messages)
 
-    response_text = openai_chat(final_prompt)
     response_text = extract_json(response_text)
 
     for doc in filtered_docs:
