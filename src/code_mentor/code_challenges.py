@@ -6,18 +6,10 @@ import tempfile
 import os
 from streamlit_ace import st_ace
 
-# Handle OpenAI API key
-openai_api_key = os.getenv("OPENAI_API_KEY")
-try:
-    if not openai_api_key:
-        openai_api_key = st.secrets["OPENAI_API_KEY"]
-except (FileNotFoundError, AttributeError, KeyError):
-    pass
-
-if not openai_api_key:
-    raise ValueError("OPENAI_API_KEY not found in .env or Streamlit secrets.")
-
-openai.api_key = openai_api_key
+# Set your OpenAI API key from environment variables
+openai.api_key = os.getenv("OPENAI_API_KEY")
+if not openai.api_key:
+    raise ValueError("Please set your OPENAI_API_KEY in your .env file.")
 
 def extract_json(text):
     """Extracts a JSON object from a string by locating the first '{' and the last '}'."""
@@ -57,12 +49,10 @@ def generate_question(context="parallel and distributed computing using python")
     current_type = question_types[st.session_state.question_type_index]
     st.session_state.question_type_index = (st.session_state.question_type_index + 1) % len(question_types)
     
-    # Updated prompt with explicit prohibition on external modules.
     prompt = (
         f"Generate a quiz question about {context} for a Python quiz system. "
         f"The question should be of the type '{current_type}'. "
-        "Ensure that the code uses only modules that come with the default Python installation. "
-        "Do not use any external packages (for example, do not import numpy, requests, joblib, etc.). "
+        "Ensure that the code uses only Python's standard library (no external packages such as numpy or joblib). "
         "For 'complete_code' questions, include a clear placeholder marker such as '### INSERT CODE HERE' in the code snippet, "
         "and add a comment above the placeholder describing what code is expected. "
         "Return only valid JSON with exactly the following keys:\n"
@@ -93,7 +83,6 @@ def generate_question(context="parallel and distributed computing using python")
         st.error(f"Error generating question: {e}")
         return None
 
-
 def run_code_in_docker(user_code):
     """
     Executes the provided user_code inside a Docker container as a sandbox.
@@ -105,19 +94,12 @@ def run_code_in_docker(user_code):
         tmp_path = tmp.name
 
     try:
-        # result = subprocess.run(
-        #     ["docker", "run", "--rm", "-v", f"{tmp_path}:/tmp/user_code.py", "python:3.9-slim", "python", "/tmp/user_code.py"],
-        #     capture_output=True,
-        #     text=True,
-        #     timeout=30
-        # )
         result = subprocess.run(
-            ["docker", "run", "--rm", "-v", f"{tmp_path}:/tmp/user_code.py", "my-python-app", "python", "/tmp/user_code.py"],
+            ["docker", "run", "--rm", "-v", f"{tmp_path}:/tmp/user_code.py", "python:3.9-slim", "python", "/tmp/user_code.py"],
             capture_output=True,
             text=True,
             timeout=30
         )
-
         output = result.stdout
         error = result.stderr
         return output, error

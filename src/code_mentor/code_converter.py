@@ -3,20 +3,14 @@ import time
 from dotenv import load_dotenv
 
 load_dotenv()
-import streamlit as st
+
 from mistralai import Mistral, UserMessage
 from mistralai.models import SDKError
 
-# Handle Mistral API key
+# Get your Mistral API key from environment
 api_key = os.getenv("MISTRAL_API_KEY")
-try:
-    if not api_key:
-        mistral_api_key = st.secrets["MISTRAL_API_KEY"]
-except (FileNotFoundError, AttributeError, KeyError):
-    pass
-
 if not api_key:
-    raise ValueError("MISTRAL_API_KEY not found in .env or Streamlit secrets.")
+    raise ValueError("Please set your MISTRAL_API_KEY in your .env file.")
 
 client = Mistral(api_key=api_key)
 

@@ -72,19 +72,11 @@ if "code_converter_feedback" not in st.session_state:
     st.session_state.code_converter_feedback = ""
 
 # ------------------- Load Environment & OpenAI Key -------------------
-# Handle OpenAI API key
-openai_api_key = os.getenv("OPENAI_API_KEY")
-try:
-    if not openai_api_key:
-        openai_api_key = st.secrets["OPENAI_API_KEY"]
-except (FileNotFoundError, AttributeError, KeyError):
-    pass
-
+openai.api_key = os.getenv("OPENAI_API_KEY")
 if not openai.api_key:
     st.error("Error: No OPENAI_API_KEY found in environment!")
     st.stop()
-    
-openai.api_key = openai_api_key
+
 # ------------------- Helper Function: Load CSS -------------------
 def load_css(file_path: str):
     """Loads and injects CSS styles"""

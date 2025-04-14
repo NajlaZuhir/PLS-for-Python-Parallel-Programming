@@ -1,12 +1,11 @@
 import os
 import openai
 import openai
-import streamlit as st
 
-# Initialize OpenAI client
-client = OpenAI(
-    api_key=st.secrets.get("OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
-)
+
+# Handle OpenAI API key
+openai_api_key = os.getenv("OPENAI_API_KEY")
+
 
 def openai_chat(prompt_text: str) -> str:
     # Split prompt into system and user messages

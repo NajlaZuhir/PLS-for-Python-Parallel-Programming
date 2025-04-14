@@ -5,20 +5,11 @@ from src.utils.vector_store_utils import load_vector_store
 from src.chat.normal_mode import get_system_message as normal_sysmsg, format_context as normal_context
 from src.chat.socratic_mode import get_system_message as socratic_sysmsg, format_context as socratic_context
 import os
-import streamlit as st
 
-# Handle OpenAI API key
-openai_api_key = os.getenv("OPENAI_API_KEY")
-try:
-    if not openai_api_key:
-        openai_api_key = st.secrets["OPENAI_API_KEY"]
-except (FileNotFoundError, AttributeError, KeyError):
-    pass
-
-if not openai_api_key:
-    raise ValueError("OPENAI_API_KEY not found in .env or Streamlit secrets.")
-
-openai.api_key = openai_api_key
+# Set your OpenAI API key from environment variables
+openai.api_key = os.getenv("OPENAI_API_KEY")
+if not openai.api_key:
+    raise ValueError("Please set your OPENAI_API_KEY in your .env file.")
 
 def embed_text(text):
     """

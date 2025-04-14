@@ -1,21 +1,9 @@
 import os
 from dotenv import load_dotenv
 load_dotenv()
-import streamlit as st
+
 import openai
-
-# Handle OpenAI API key
-openai_api_key = os.getenv("OPENAI_API_KEY")
-try:
-    if not openai_api_key:
-        openai_api_key = st.secrets["OPENAI_API_KEY"]
-except (FileNotFoundError, AttributeError, KeyError):
-    pass
-
-if not openai_api_key:
-    raise ValueError("OPENAI_API_KEY not found in .env or Streamlit secrets.")
-
-openai.api_key = openai_api_key
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 import requests
 from io import BytesIO
