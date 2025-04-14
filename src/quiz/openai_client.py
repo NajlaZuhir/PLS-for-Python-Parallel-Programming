@@ -1,6 +1,6 @@
 import os
 import openai
-from openai import OpenAI
+import openai
 import streamlit as st
 
 # Initialize OpenAI client
@@ -19,10 +19,14 @@ def openai_chat(prompt_text: str) -> str:
         {"role": "user", "content": user_message}
     ]
 
-    response = client.chat.completions.create(
+
+    response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=messages,
         temperature=0.7,
-        max_tokens=1500
+        max_tokens=1500  # Lowered from 3000 to 1500
     )
     return response.choices[0].message.content.strip()
+    # except (APIConnectionError, APIError) as e:
+    #     st.error(f"🌐 Connection error: {e}")
+    #     return ""
