@@ -27,10 +27,12 @@ using EXCLUSIVELY this context:
 
 Requirements:
 1. Questions must be answerable using ONLY the provided context.
-2. Provide 4 answer options per question (A) to D) that are highly plausible distractors requiring critical thought.
-3. Clearly indicate the correct answer (e.g. "A").
-4. Reflect {difficulty} complexity in the questions.
-5. Output JSON in this format:
+2. Do **not** reference code snippets, function names, provided context, or programming questions
+3. constructs – ask conceptual questions only.
+4. Provide 4 answer options per question (A) to D) that are highly plausible distractors requiring critical thought.
+5. Clearly indicate the correct answer (e.g. "A").
+6. Reflect {difficulty} complexity in the questions.
+7. Output JSON in this format:
 {{
   "questions": [
     {{
@@ -55,10 +57,12 @@ using EXCLUSIVELY this context:
 
 Requirements:
 1. Questions must be answerable using ONLY the provided context.
-2. Answers must be "True" or "False" only.
-3. The options array MUST BE EMPTY.
-4. Reflect {difficulty} complexity in the questions.
-5. Output JSON in this format:
+2. Do **not** reference code snippets, function names, provided context, or programming questions
+3. constructs – ask conceptual questions only.
+4. Answers must be "True" or "False" only.
+5. The options array MUST BE EMPTY.
+6. Reflect {difficulty} complexity in the questions.
+7. Output JSON in this format:
 {{
   "questions": [
     {{
@@ -83,9 +87,11 @@ using EXCLUSIVELY this context:
 
 Requirements:
 1. Each question should be a sentence with a blank indicated by "_____".
-2. Provide a single correct answer for the blank.
-3. Reflect {difficulty} complexity in the questions.
-4. Output JSON in this format:
+2.Do **not** reference code snippets, function names, provided context, or programming questions
+3.constructs – ask conceptual questions only.
+4. Provide a single correct answer for the blank.
+5. Reflect {difficulty} complexity in the questions.
+6. Output JSON in this format:
 {{
   "questions": [
     {{
@@ -109,11 +115,13 @@ using EXCLUSIVELY this context:
 
 Requirements:
 1. Each question must provide several options.
-2. There can be more than one correct answer.
-3. Provide answer options labeled (A), (B), (C), (D), etc.
-4. Clearly indicate the correct answers as a list (e.g. ["A", "C"]).
-5. Reflect {difficulty} complexity in the questions.
-6. Output JSON in this format:
+2. Do **not** reference code snippets, function names, provided context, or programming questions
+3. constructs – ask conceptual questions only.
+4. There can be more than one correct answer.
+5. Provide answer options labeled (A), (B), (C), (D), etc.
+6. Clearly indicate the correct answers as a list (e.g. ["A", "C"]).
+7. Reflect {difficulty} complexity in the questions.
+8. Output JSON in this format:
 {{
   "questions": [
     {{
